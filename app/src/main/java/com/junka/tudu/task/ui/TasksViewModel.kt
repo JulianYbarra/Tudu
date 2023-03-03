@@ -1,9 +1,11 @@
 package com.junka.tudu.task.ui
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.junka.tudu.task.ui.model.TaskModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -13,17 +15,25 @@ class TasksViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _showDialog = MutableLiveData<Boolean>()
-    val showDialog : LiveData<Boolean> = _showDialog
+    val showDialog: LiveData<Boolean> = _showDialog
+
+    private val _tasks = mutableStateListOf<TaskModel>()
+    val tasks: List<TaskModel> = _tasks
 
     fun onDialogClose() {
         _showDialog.value = false
     }
 
-    fun onDialogShow(){
+    fun onDialogShow() {
         _showDialog.value = true
     }
 
     fun onTaskCreated(task: String) {
-        Log.i("TAG", "onTaskCreated: $task")
+        _showDialog.value = false
+        _tasks.add(TaskModel(task = task))
+    }
+
+    fun onTaskChecked(task: TaskModel) {
+
     }
 }
