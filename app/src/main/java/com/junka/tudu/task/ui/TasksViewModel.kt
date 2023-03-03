@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.junka.tudu.task.ui.model.TaskModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.selects.select
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +35,9 @@ class TasksViewModel @Inject constructor(
     }
 
     fun onTaskChecked(task: TaskModel) {
-
+        val index = _tasks.indexOf(task)
+        _tasks[index] = _tasks[index].let {
+            it.copy(selected = !it.selected)
+        }
     }
 }
