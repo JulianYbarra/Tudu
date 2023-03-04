@@ -2,6 +2,7 @@ package com.junka.tudu.task.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,19 +51,27 @@ fun TasksList(tasksViewModel: TasksViewModel) {
 
     LazyColumn {
         items(myTasks, key = { it.id }) { task ->
-            ItemTask(task = task, onItemChecked = { tasksViewModel.onTaskChecked(it) })
+            ItemTask(
+                task = task,
+                onItemChecked = { tasksViewModel.onTaskChecked(it) },
+                onItemTap = { tasksViewModel.onItemRemove(task) })
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemTask(task: TaskModel, onItemChecked: (TaskModel) -> Unit) {
+fun ItemTask(task: TaskModel, onItemChecked: (TaskModel) -> Unit, onItemTap: (TaskModel) -> Unit) {
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = {
+                    onItemTap(task)
+                })
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
 
