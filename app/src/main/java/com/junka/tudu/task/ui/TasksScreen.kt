@@ -1,6 +1,5 @@
 package com.junka.tudu.task.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -15,46 +14,74 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.junka.tudu.task.ui.model.TaskModel
 
 @Composable
 fun TasksScreen(tasksViewModel: TasksViewModel) {
-
     val showDialog by tasksViewModel.showDialog.observeAsState(false)
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AddTaskDialog(show = showDialog, onDismiss = {
-            tasksViewModel.onDialogClose()
-        }, onSave = { task ->
-            tasksViewModel.onTaskCreated(task)
-        })
-        FabDialog(
-            modifier =
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp), tasksViewModel
-        )
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-        TasksList(tasksViewModel)
+    val state by produceState<TasksUiState>(
+        initialValue = TasksUiState.Loading,
+        key1 = lifecycle,
+        key2 = tasksViewModel
+    ) {
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            tasksViewModel.state.collect { value = it }
+        }
+    }
+
+
+    when (state) {
+        is TasksUiState.Error -> {
+
+        }
+        TasksUiState.Loading -> {
+
+        }
+        is TasksUiState.Success -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AddTaskDialog(show = showDialog, onDismiss = {
+                    tasksViewModel.onDialogClose()
+                }, onSave = { task ->
+                    tasksViewModel.onTaskCreated(task)
+                })
+                FabDialog(
+                    modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp), tasksViewModel
+                )
+                TasksList((state as TasksUiState.Success).tasks,
+                    onItemChecked = { tasksViewModel.onTaskChecked(it) },
+                    onItemTap = { tasksViewModel.onItemRemove(it) })
+            }
+        }
     }
 }
 
 @Composable
-fun TasksList(tasksViewModel: TasksViewModel) {
-
-    val myTasks: List<TaskModel> = tasksViewModel.tasks
+fun TasksList(
+    myTasks: List<TaskModel>,
+    onItemChecked: (TaskModel) -> Unit,
+    onItemTap: (TaskModel) -> Unit
+) {
 
     LazyColumn {
         items(myTasks, key = { it.id }) { task ->
             ItemTask(
                 task = task,
-                onItemChecked = { tasksViewModel.onTaskChecked(it) },
-                onItemTap = { tasksViewModel.onItemRemove(task) })
+                onItemChecked = { onItemChecked(task) },
+                onItemTap = { onItemTap(task) })
         }
     }
 }

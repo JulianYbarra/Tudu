@@ -1,6 +1,5 @@
 package com.junka.tudu.task.ui
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,7 +48,7 @@ class TasksViewModel @Inject constructor(
 
     fun onTaskChecked(task: TaskModel) {
        viewModelScope.launch {
-           updateTaskUseCase(task)
+           updateTaskUseCase(task.copy(selected = !task.selected))
        }
     }
 
