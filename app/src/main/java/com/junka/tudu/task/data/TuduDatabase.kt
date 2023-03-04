@@ -7,5 +7,5 @@ import com.junka.tudu.task.data.model.TaskEntity
 @Database(entities = [TaskEntity::class], version = 1)
 abstract class TuduDatabase : RoomDatabase() {
 
-    abstract fun taskDao()
+    abstract fun taskDao() : TaskDao
 }

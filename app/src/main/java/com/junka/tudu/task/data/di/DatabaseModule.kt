@@ -2,6 +2,7 @@ package com.junka.tudu.task.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.junka.tudu.task.data.TaskDao
 import com.junka.tudu.task.data.TuduDatabase
 import dagger.Module
 import dagger.Provides
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 class DatabaseModule {
 
     @Provides
-    fun providesTaskDao(tuduDatabase: TuduDatabase) = tuduDatabase.taskDao()
+    fun providesTaskDao(tuduDatabase: TuduDatabase)  :TaskDao = tuduDatabase.taskDao()
 
     @Singleton
     @Provides
