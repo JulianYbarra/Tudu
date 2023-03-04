@@ -2,7 +2,6 @@ package com.junka.tudu.task.data.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.junka.tudu.task.data.TuduDatabase
 import dagger.Module
 import dagger.Provides
